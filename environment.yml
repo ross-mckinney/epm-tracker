@@ -1,0 +1,11 @@
+name: epm
+dependencies:
+  - python=2.7
+  - numpy
+  - scipy
+  - pandas
+  - scikit-image
+  - pyqt
+  - pip:
+    - qdarkstyle
+    - motmot.FlyMovieFormat
