@@ -8,6 +8,7 @@ from PyQt4.QtGui import *
 import qdarkstyle
 
 from video import VideoWidget
+from tracking import TrackingDialog
 
 DIR = os.path.dirname(__file__)
 
@@ -30,6 +31,7 @@ class MainWindow(QMainWindow):
 
         self.set_file_menu()
         self.set_video_menu()
+        self.set_tracking_menu()
 
         self.set_slider()
         self.set_status()
@@ -147,10 +149,20 @@ class MainWindow(QMainWindow):
             name='Pause/Play',
             connection=self.stop_start,
             status_tip='Start playing, pause, or resume playing video.',
-            return_action = True
+            return_action=True
             )
         self.stop_start_action.setEnabled(False)
         self.stop_start_action.setShortcut(QKeySequence(Qt.Key_Space))
+
+    def set_tracking_menu(self):
+        self.tracking_action = self.add_menu_action(
+            menu=self.tracking_menu,
+            name='Track Video',
+            connection=self.track_video,
+            status_tip='Track current video.',
+            return_action=True
+        )
+        self.tracking_action.setEnabled(False)
 
     def open_video(self, video_filename=None):
         if not isinstance(video_filename, str):
@@ -186,6 +198,7 @@ class MainWindow(QMainWindow):
         self.play_action.setEnabled(flag)
         self.stop_action.setEnabled(flag)
         self.stop_start_action.setEnabled(flag)
+        self.tracking_action.setEnabled(flag)
 
         self.slider.setEnabled(flag)
 
@@ -209,6 +222,9 @@ class MainWindow(QMainWindow):
 
         status.addPermanentWidget(self.frame_info_label)
         status.addWidget(self.video_info_label)
+
+    def track_video(self):
+        pass
 
     @pyqtSlot(int, str, int)
     def update_status(self, ix, hmms, frame_rate):
