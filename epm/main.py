@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
             name='Open Video',
             connection=self.open_video,
             status_tip='Open an individual video.',
-            shortcut=None
+            shortcut=QKeySequence.Open
             )
 
     def set_video_menu(self):
