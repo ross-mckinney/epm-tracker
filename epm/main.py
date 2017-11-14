@@ -160,8 +160,11 @@ class MainWindow(QMainWindow):
                 directory=self.root_folder
                 ))
 
+        if not os.path.isfile(video_filename):
+            return
+
         self.video_widget.set_video(video_filename)
-        self.slider.setMaximum(self.video_widget.video.get_n_frames()-1)
+        self.slider.setMaximum(self.video_widget.video.get_n_frames() - 1)
         self.enable_video_controls(True)
 
     def enable_video_controls(self, flag=True):
