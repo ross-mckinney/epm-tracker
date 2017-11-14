@@ -5,7 +5,7 @@ dependencies:
   - scipy
   - pandas
   - scikit-image
-  - pyqt
+  - pyqt=4.*
   - pip:
     - qdarkstyle
     - motmot.FlyMovieFormat
