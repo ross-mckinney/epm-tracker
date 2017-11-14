@@ -8,7 +8,7 @@ from _tracking import (
     threshold_image
 )
 
-class TrackingSettings(Object):
+class TrackingSettings:
     """
     Parameters
     ----------
