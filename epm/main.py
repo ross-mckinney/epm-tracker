@@ -32,7 +32,8 @@ class MainWindow(QMainWindow):
         self.set_video_menu()
 
         self.set_slider()
-        self.set_status(0, 'NA:NA:NA', -1)
+        self.set_status()
+        self.update_status(0, 'NA:NA:NA', -1)
 
     def add_menu_action(self, menu, name, connection, status_tip,
         shortcut=None, icon=None, tool_bar=None, return_action=False):
@@ -164,13 +165,20 @@ class MainWindow(QMainWindow):
             return
 
         self.video_widget.set_video(video_filename)
+        self.video_info_label.setText(
+            'Current Video: {}'.format(
+                os.path.basename(video_filename)
+            ))
+        self.frame_info_label.setText(
+            'Frame: 0 (00:00:00) | FPS: -1'
+        )
         self.slider.setMaximum(self.video_widget.video.get_n_frames() - 1)
         self.enable_video_controls(True)
 
     def enable_video_controls(self, flag=True):
         #connect video_player signals
         if flag is True:
-            self.video_widget.frame_changed.connect(self.set_status)
+            self.video_widget.frame_changed.connect(self.update_status)
 
         #enable video controls
         self.previous_action.setEnabled(flag)
@@ -189,9 +197,24 @@ class MainWindow(QMainWindow):
         self.video_widget.frame_changed.connect(self.update_slider)
         self.slider.setEnabled(False)
 
+    def set_status(self):
+        status = self.statusBar()
+        self.frame_info_label = QLabel()
+        self.frame_info_label.setFrameStyle(
+            QFrame.StyledPanel | QFrame.Sunken)
+        self.frame_info_label.setText('Frame: NA (00:00:00)')
+
+        self.video_info_label = QLabel()
+        self.video_info_label.setText('Current Video: NA')
+
+        status.addPermanentWidget(self.frame_info_label)
+        status.addWidget(self.video_info_label)
+
     @pyqtSlot(int, str, int)
-    def set_status(self, ix, hmms, frame_rate):
-        pass
+    def update_status(self, ix, hmms, frame_rate):
+        self.frame_info_label.setText(
+            'Frame: {} ({}) | FPS: {}'.format(ix, hmms, frame_rate)
+        )
 
     @pyqtSlot(int)
     def update_slider(self, ix):
