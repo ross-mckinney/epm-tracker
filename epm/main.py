@@ -174,6 +174,8 @@ class MainWindow(QMainWindow):
         self.next_action.setEnabled(flag)
         self.play_action.setEnabled(flag)
         self.stop_action.setEnabled(flag)
+        self.stop_start_action.setEnabled(flag)
+
         self.slider.setEnabled(flag)
 
     def set_slider(self):
