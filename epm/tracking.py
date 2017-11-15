@@ -552,16 +552,19 @@ class TrackingDialog(QDialog):
         tracking_data['min'] = minor
 
         if self.tracking_settings.save_filename is not None:
-            tracking_data.to_excel(
-                self.tracking_settings.save_filename,
-                na_rep='NA',
-                index_label='frame',
-                sheet_name='RawData')
+            savename = self.tracking_settings.save_filename
         else:
-            savename = strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
+            savename = os.path.join(
+                os.path.expanduser('~'),
+                strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
+                )
             savename += '.xlsx'
-            tracking_data.to_excel(
-                os.path.join(os.path.expanduser("~"), savename),
-                na_rep='NA',
-                index_label='frame',
-                sheet_name='RawData')
+
+        tracking_data.to_excel(
+            savename,
+            na_rep='NA',
+            index_label='frame',
+            sheet_name='RawData')
+
+        self.tracking_complete.emit(True, savename)
+        self.close()
