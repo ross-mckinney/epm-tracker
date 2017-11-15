@@ -4,6 +4,7 @@ from time import gmtime, strftime
 
 import numpy as np
 import pandas as pd
+from skimage.draw import polygon
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -56,11 +57,11 @@ class TrackingSettings:
     background_n_frames : int, optional (default=200)
         How many frames to use to calculate background image.
 
-    exclusion_mask : np.array, optional
-        Which region of the image should NOT be included in tracking.
+    inclusion_mask : np.array, optional
+        Which region of the image should be included in tracking.
 
-    exclusion_mask_filename : string, optional
-        File that contains information about exclusion_mask.
+    inclusion_mask_filename : string, optional
+        File that contains information about inclusion_mask.
 
     save_filename : string, optional
         Where to save
@@ -69,16 +70,18 @@ class TrackingSettings:
         exculsion_mask_filename=None, save_filename=None):
         self.threshold = threshold
         self.background_n_frames = background_n_frames
-        self.exclusion_mask = exclusion_mask
-        self.exclusion_mask_filename = exculsion_mask_filename
+        self.inclusion_mask = exclusion_mask
+        self.inclusion_mask_filename = exculsion_mask_filename
         self.save_filename = save_filename
 
 
 class MaskPoint(QGraphicsItem):
-    def __init__(self, ellipse_x, ellipse_y, ellipse_width, color, parent=None):
+    def __init__(self, ellipse_x, ellipse_y, ellipse_width, color,
+        text='', parent=None):
         super(MaskPoint, self).__init__(parent)
 
         self.color = color
+        self.text = text
 
         self.ellipse_width = self.ellipse_height = ellipse_width
         self.ellipse_x = ellipse_x
@@ -103,7 +106,42 @@ class MaskPoint(QGraphicsItem):
         painter.drawEllipse(self.ellipse_x - 0.5 * self.ellipse_width,
             self.ellipse_y - 0.5 * self.ellipse_height,
             self.ellipse_width, self.ellipse_height)
+        # painter.setPen(Qt.SolidLine)
+        # painter.setBrush(Qt.black)
+        # painter.drawText(self.ellipse_x, self.ellipse_height, self.text)
+        # painter.setPen(Qt.NoPen)
 
+
+# class MaskEdge(QGraphicsItem):
+#     def __init__(self, p1, p2, parent=None):
+#         super(MaskEdge, self).__init__(parent)
+#         self.p1 = p1
+#         self.p2 = p2
+#
+#         if self.p1.x() <= self.p2.x():
+#             self.bounding_rect_x = self.p1.x()
+#         else:
+#             self.bounding_rect_x = self.p2.x()
+#
+#         if self.p1.y() <= self.p2.y():
+#             self.bounding_rect_y = self.p1.y()
+#         else:
+#             self.bounding_rect_y = self.p2.y()
+#
+#         self.bounding_rect_width = np.abs(self.p1.x() - self.p2.x())
+#         self.bounding_rect_height = np.abs(self.p1.y() - self.p2.y())
+#
+#         self.setAcceptedMouseButtons(Qt.LeftButton)
+#         self.setFlag(QGraphicsItem.ItemIsMovable)
+#
+#     def boundingRect(self):
+#         return QRectF(self.bounding_rect_x, self.bounding_rect_y,
+#             self.bounding_rect_width, self.bounding_rect_height)
+#
+#     def paint(self, painter, option, widget):
+#         painter.setPen(Qt.SolidLine)
+#         painter.setBrush(Qt.yellow)
+#         painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
 
 class MaskWidget(QWidget):
     """Widget to manage setting of mask for EPM."""
@@ -131,50 +169,37 @@ class MaskWidget(QWidget):
         )
         self.graphics_scene_view = QGraphicsView(self.graphics_scene)
 
-        #mask point set #1
-        self.mask_point_set1 = [
-            MaskPoint(self.video.get_width()/4, 0, 10, Qt.blue),
+        # mask points
+        self.mask_points = [
+            MaskPoint(self.video.get_width()/4, 0, 10, Qt.blue, '1'),
             MaskPoint(self.video.get_width()/2,
-                self.video.get_height()/3, 10, Qt.darkBlue),
-            MaskPoint(self.video.get_width()/4*3, 0, 10, Qt.blue)
-        ]
-        for mask_point in self.mask_point_set1:
-            self.graphics_scene.addItem(mask_point)
+                self.video.get_height()/3, 10, Qt.darkBlue, '2'),
+            MaskPoint(self.video.get_width()/4*3, 0, 10, Qt.blue, '3'),
 
-        #mask point set #2
-        self.mask_point_set2 = [
             MaskPoint(self.video.get_width(), self.video.get_height()/4,
-                10, Qt.green),
+                10, Qt.green, '4'),
             MaskPoint(self.video.get_width()/3*2, self.video.get_height()/2,
-                10, Qt.darkGreen),
+                10, Qt.darkGreen, '5'),
             MaskPoint(self.video.get_width(), self.video.get_height()/4*3,
-                10, Qt.green)
-        ]
-        for mask_point in self.mask_point_set2:
-            self.graphics_scene.addItem(mask_point)
+                10, Qt.green, '6'),
 
-        #mask point set #3
-        self.mask_point_set3 = [
             MaskPoint(self.video.get_width()/4, self.video.get_height(),
-                10, Qt.cyan),
+                10, Qt.cyan, '7'),
             MaskPoint(self.video.get_width()/2,
-                self.video.get_height()/3*2, 10, Qt.darkCyan),
+                self.video.get_height()/3*2, 10, Qt.darkCyan, '8'),
             MaskPoint(self.video.get_width()/4*3, self.video.get_height(),
-                10, Qt.cyan)
-        ]
-        for mask_point in self.mask_point_set3:
-            self.graphics_scene.addItem(mask_point)
+                10, Qt.cyan, '9'),
 
-        self.mask_point_set4 = [
-            MaskPoint(0, self.video.get_height()/4, 10, Qt.magenta),
+            MaskPoint(0, self.video.get_height()/4, 10, Qt.magenta, '10'),
             MaskPoint(self.video.get_width()/3, self.video.get_height()/2,
-                10, Qt.darkMagenta),
-            MaskPoint(0, self.video.get_height()/4*3, 10, Qt.magenta)
+                10, Qt.darkMagenta, '11'),
+            MaskPoint(0, self.video.get_height()/4*3, 10, Qt.magenta, '12')
         ]
-        for mask_point in self.mask_point_set4:
+        for mask_point in self.mask_points:
             self.graphics_scene.addItem(mask_point)
 
         self.generate_mask_button = QPushButton('Update Mask')
+        self.generate_mask_button.clicked.connect(self.generate_mask)
         self.load_mask_button = QPushButton('Load Mask')
         self.save_mask_button = QPushButton('Save Mask')
 
@@ -206,6 +231,53 @@ class MaskWidget(QWidget):
         layout.addWidget(self.mask_image_label)
         layout.addWidget(self.arena_with_mask_image_label)
         self.mask_image_groupbox.setLayout(layout)
+
+    @pyqtSlot()
+    def generate_mask(self):
+
+        central_rs, central_cs = 0, 0
+        global_point_pos = np.zeros(shape=(len(self.mask_points), 2))
+        # collect all of the mask points, generate global coords,
+        # and find the center of mass of the points (center of the arena).
+        for i, mask_point in enumerate(self.mask_points):
+            # transform coords w.r.t. graphics_scene_pixmap
+            point_pos = np.array([mask_point.y(), mask_point.x()])
+            global_point_pos[i, :] = (
+                np.array([mask_point.ellipse_y, mask_point.ellipse_x]) +
+                point_pos
+                )
+            central_rs += global_point_pos[i, 0]
+            central_cs += global_point_pos[i, 1]
+
+        central_point = np.array([
+            central_rs / global_point_pos.shape[0],
+            central_cs / global_point_pos.shape[0]])
+
+        # get coordinates such that they are all relative to the central point
+        relative_point_pos = global_point_pos - central_point
+        # sort the mask_points based on angle made with center of image.
+        angles = np.arctan2(relative_point_pos[:, 0], relative_point_pos[:, 1])
+        sorted_polygon_points = relative_point_pos[np.argsort(angles)]
+
+        # place coordinates back into global positions for mask drawing.
+        sorted_polygon_points += central_point
+        # add first point onto end of points list to form closed polygon
+        sorted_polygon_points = np.vstack((sorted_polygon_points,
+            sorted_polygon_points[-1, :]))
+        mask = np.zeros_like(self.arena_image)
+        rr, cc = polygon(sorted_polygon_points[:, 0],
+            sorted_polygon_points[:, 1], shape=self.arena_image.shape)
+        mask[rr, cc] = 1
+        # set this mask as the inclusion mask in our tracking_settings dict.
+        self.tracking_settings.inclusion_mask = mask
+
+        self.mask_image = convert_img_to_uint8(mask)
+
+        self.arena_with_mask_image = self.arena_image
+        self.arena_with_mask_image[~mask.astype(np.bool)] = 0
+
+        self.update_mask_image_label()
+        self.update_arena_with_mask_image_label()
 
     def update_arena_image_label(self):
         self.arena_image_label.setPixmap(
