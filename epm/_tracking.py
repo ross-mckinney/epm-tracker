@@ -68,6 +68,30 @@ def calc_background_image(vid, n_frames=200):
     background_image /= (n_frames * 1.)
     return background_image.astype(np.uint8)
 
+def get_otsu_threshold(img, b_img):
+    """Gets the calculated otsu threshold from the passed background-subtracted
+    image.
+
+    Parameters
+    ----------
+    img : np.array
+        Current image.
+
+    b_img : np.array
+        Background image.
+
+    Returns
+    -------
+    threshold : float
+    """
+    # subtract off the background from the current image.
+    sub_image = convert_img_to_float(img) - convert_img_to_float(b_img)
+    # invert the image so that the region we are interested in has a
+    # positive value.
+    sub_image = -sub_image
+
+    return threshold_otsu(sub_image)
+
 def threshold_image(img, b_img, threshold=None):
     """Subtracts off background and thresholds current image.
 
