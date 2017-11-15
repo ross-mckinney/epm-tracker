@@ -22,6 +22,7 @@ from utils import (
     get_mouse_coords
 )
 
+
 class Tracker(QObject):
     progress = pyqtSignal(int)
     def __init__(self, video, tracking_settings, parent=None):
@@ -43,6 +44,7 @@ class Tracker(QObject):
             self.progress.emit(ix)
 
         return props
+
 
 class TrackingSettings:
     """
@@ -70,6 +72,157 @@ class TrackingSettings:
         self.exclusion_mask = exclusion_mask
         self.exclusion_mask_filename = exculsion_mask_filename
         self.save_filename = save_filename
+
+
+class MaskPoint(QGraphicsItem):
+    def __init__(self, ellipse_x, ellipse_y, ellipse_width, color, parent=None):
+        super(MaskPoint, self).__init__(parent)
+
+        self.color = color
+
+        self.ellipse_width = self.ellipse_height = ellipse_width
+        self.ellipse_x = ellipse_x
+        self.ellipse_y = ellipse_y
+
+        self.bounding_rect_x = self.ellipse_x - 0.5 * self.ellipse_width
+        self.bounding_rect_y = self.ellipse_y - 0.5 * self.ellipse_width
+        self.bounding_rect_width = self.ellipse_width
+        self.bounding_rect_height = self.ellipse_height
+
+        self.setCursor(Qt.OpenHandCursor)
+        self.setAcceptedMouseButtons(Qt.LeftButton)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+
+    def boundingRect(self):
+        return QRectF(self.bounding_rect_x, self.bounding_rect_y,
+            self.bounding_rect_width, self.bounding_rect_height)
+
+    def paint(self, painter, option, widget):
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.color)
+        painter.drawEllipse(self.ellipse_x - 0.5 * self.ellipse_width,
+            self.ellipse_y - 0.5 * self.ellipse_height,
+            self.ellipse_width, self.ellipse_height)
+
+
+class MaskWidget(QWidget):
+    """Widget to manage setting of mask for EPM."""
+    def __init__(self, video, tracking_settings, parent=None):
+        super(MaskWidget, self).__init__(parent)
+        self.video = video
+        self.tracking_settings = tracking_settings
+
+        self.set_graphics_scene_ui()
+        self.set_mask_image_ui()
+
+        layout=QGridLayout()
+        layout.addWidget(self.mask_image_groupbox, 0, 0, 4, 1)
+        layout.addWidget(self.graphics_scene_groupbox, 0, 1, 2, 1)
+        self.setLayout(layout)
+
+    def set_graphics_scene_ui(self):
+        self.graphics_scene_groupbox = QGroupBox()
+        layout = QGridLayout()
+
+        self.graphics_scene = QGraphicsScene()
+        #background image
+        self.graphics_scene_pixmap = self.graphics_scene.addPixmap(
+            QPixmap.fromImage(get_q_image(self.video.get_frame(0)[0]))
+        )
+        self.graphics_scene_view = QGraphicsView(self.graphics_scene)
+
+        #mask point set #1
+        self.mask_point_set1 = [
+            MaskPoint(self.video.get_width()/4, 0, 10, Qt.blue),
+            MaskPoint(self.video.get_width()/2,
+                self.video.get_height()/3, 10, Qt.darkBlue),
+            MaskPoint(self.video.get_width()/4*3, 0, 10, Qt.blue)
+        ]
+        for mask_point in self.mask_point_set1:
+            self.graphics_scene.addItem(mask_point)
+
+        #mask point set #2
+        self.mask_point_set2 = [
+            MaskPoint(self.video.get_width(), self.video.get_height()/4,
+                10, Qt.green),
+            MaskPoint(self.video.get_width()/3*2, self.video.get_height()/2,
+                10, Qt.darkGreen),
+            MaskPoint(self.video.get_width(), self.video.get_height()/4*3,
+                10, Qt.green)
+        ]
+        for mask_point in self.mask_point_set2:
+            self.graphics_scene.addItem(mask_point)
+
+        #mask point set #3
+        self.mask_point_set3 = [
+            MaskPoint(self.video.get_width()/4, self.video.get_height(),
+                10, Qt.cyan),
+            MaskPoint(self.video.get_width()/2,
+                self.video.get_height()/3*2, 10, Qt.darkCyan),
+            MaskPoint(self.video.get_width()/4*3, self.video.get_height(),
+                10, Qt.cyan)
+        ]
+        for mask_point in self.mask_point_set3:
+            self.graphics_scene.addItem(mask_point)
+
+        self.mask_point_set4 = [
+            MaskPoint(0, self.video.get_height()/4, 10, Qt.magenta),
+            MaskPoint(self.video.get_width()/3, self.video.get_height()/2,
+                10, Qt.darkMagenta),
+            MaskPoint(0, self.video.get_height()/4*3, 10, Qt.magenta)
+        ]
+        for mask_point in self.mask_point_set4:
+            self.graphics_scene.addItem(mask_point)
+
+        self.generate_mask_button = QPushButton('Update Mask')
+        self.load_mask_button = QPushButton('Load Mask')
+        self.save_mask_button = QPushButton('Save Mask')
+
+        layout.addWidget(self.graphics_scene_view, 0, 0, 5, 5)
+        layout.addWidget(self.generate_mask_button, 5, 4, 1, 1)
+        layout.addWidget(self.load_mask_button, 6, 0, 1, 1)
+        layout.addWidget(self.save_mask_button, 6, 1, 1, 1)
+
+        self.graphics_scene_groupbox.setLayout(layout)
+
+    def set_mask_image_ui(self):
+        self.mask_image_groupbox = QGroupBox('EPM Arena Mask')
+        layout = QVBoxLayout()
+
+        self.arena_image, _ = self.video.get_frame(0)
+        self.mask_image = np.zeros_like(self.arena_image).astype(np.uint8)
+        self.arena_with_mask_image = np.zeros_like(
+            self.arena_image).astype(np.uint8)
+
+        self.arena_image_label = QLabel()
+        self.mask_image_label = QLabel()
+        self.arena_with_mask_image_label = QLabel()
+
+        self.update_arena_image_label()
+        self.update_mask_image_label()
+        self.update_arena_with_mask_image_label()
+
+        layout.addWidget(self.arena_image_label)
+        layout.addWidget(self.mask_image_label)
+        layout.addWidget(self.arena_with_mask_image_label)
+        self.mask_image_groupbox.setLayout(layout)
+
+    def update_arena_image_label(self):
+        self.arena_image_label.setPixmap(
+            QPixmap.fromImage(get_q_image(self.arena_image))
+        )
+
+    def update_mask_image_label(self):
+        # TODO: update mask here.
+        self.mask_image_label.setPixmap(
+            QPixmap.fromImage(get_q_image(self.mask_image))
+        )
+
+    def update_arena_with_mask_image_label(self):
+        # TODO: update arena_with_mask_image here
+        self.arena_with_mask_image_label.setPixmap(
+            QPixmap.fromImage(get_q_image(self.arena_with_mask_image))
+        )
 
 class ThresholdWidget(QWidget):
     def __init__(self, video, tracking_settings, parent=None):
@@ -289,10 +442,16 @@ class TrackingDialog(QDialog):
         self.stacked_widget = QStackedWidget()
         self.threshold_widget = ThresholdWidget(
             self.video, self.tracking_settings)
+
+        self.mask_widget = MaskWidget(self.video, self.tracking_settings)
+
+        self.stacked_widget.addWidget(self.mask_widget)
         self.stacked_widget.addWidget(self.threshold_widget)
 
         self.next_button = QPushButton('>>')
+        self.next_button.clicked.connect(self.next_stacked_widget)
         self.previous_button = QPushButton('<<')
+        self.previous_button.clicked.connect(self.previous_stacked_widget)
         self.track_button = QPushButton('Begin Tracking')
         self.track_button.clicked.connect(self.track_video)
 
@@ -315,6 +474,21 @@ class TrackingDialog(QDialog):
 
         self.status_bar.addPermanentWidget(self.progress_bar)
         self.status_bar.addWidget(self.stacked_widget_page_label)
+
+    @pyqtSlot()
+    def next_stacked_widget(self):
+        self.stacked_widget_page = self.stacked_widget.currentIndex()
+        n_widgets_in_stack = self.stacked_widget.count()
+        if self.stacked_widget_page + 1 < n_widgets_in_stack:
+            self.stacked_widget_page += 1
+        self.stacked_widget.setCurrentIndex(self.stacked_widget_page)
+
+    @pyqtSlot()
+    def previous_stacked_widget(self):
+        self.stacked_widget_page = self.stacked_widget.currentIndex()
+        if self.stacked_widget_page > 0:
+            self.stacked_widget_page -= 1
+        self.stacked_widget.setCurrentIndex(self.stacked_widget_page)
 
     @pyqtSlot(int)
     def update_progress_bar(self, progress):
