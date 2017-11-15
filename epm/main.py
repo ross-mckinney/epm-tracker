@@ -224,7 +224,8 @@ class MainWindow(QMainWindow):
         status.addWidget(self.video_info_label)
 
     def track_video(self):
-        pass
+        dialog = TrackingDialog(self.video_widget.video)
+        dialog.exec_()
 
     @pyqtSlot(int, str, int)
     def update_status(self, ix, hmms, frame_rate):
