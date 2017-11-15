@@ -392,17 +392,6 @@ class ThresholdWidget(QWidget):
         layout.addWidget(self.random_frame_button, 2, 0, 1, 1)
 
         self.frame_number_groupbox.setLayout(layout)
-    #
-    # def setup_track_button_groupbox_ui(self):
-    #     self.track_button_groupbox = QGroupBox('Begin Tracking')
-    #     layout = QGridLayout()
-    #
-    #     self.track_button = QPushButton('Track')
-    #     layout.addWidget(QLabel('\t'*4), 0, 0, 1, 3)
-    #     layout.addWidget(QLabel('\t'*4), 1, 0, 1, 3)
-    #     layout.addWidget(QLabel('\t'*4), 2, 0, 1, 3)
-    #     layout.addWidget(self.track_button, 3, 3, 1, 1)
-    #     self.track_button_groupbox.setLayout(layout)
 
     @pyqtSlot()
     def set_save_file(self):
