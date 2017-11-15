@@ -449,6 +449,7 @@ class ThresholdWidget(QWidget):
         self.threshold_image_label.setPixmap(threshold_image_pixmap)
 
 class TrackingDialog(QDialog):
+    tracking_complete = pyqtSignal(bool, str)
     def __init__(self, video, parent=None):
         super(TrackingDialog, self).__init__(parent)
         self.video = video
