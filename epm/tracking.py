@@ -610,6 +610,8 @@ class TrackingDialog(QDialog):
 
         if self.tracking_settings.save_filename is not None:
             savename = self.tracking_settings.save_filename
+            if savename.split('.')[-1] != 'xlsx':
+                savename += '.xlsx'
         else:
             savename = os.path.join(
                 os.path.expanduser('~'),
