@@ -180,6 +180,12 @@ class MainWindow(QMainWindow):
         self.tracking_action.setEnabled(False)
 
     def open_video(self, video_filename=None):
+        if self.video_widget.video is not None:
+            self.video_widget.video = None
+            self.video_widget.tracking_data = None
+            self.video_widget.is_playing = False
+            self.video_widget.video_filename = None
+
         if not isinstance(video_filename, str):
             file_dialog = QFileDialog(self)
             video_filename = str(file_dialog.getOpenFileName(
