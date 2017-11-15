@@ -106,42 +106,7 @@ class MaskPoint(QGraphicsItem):
         painter.drawEllipse(self.ellipse_x - 0.5 * self.ellipse_width,
             self.ellipse_y - 0.5 * self.ellipse_height,
             self.ellipse_width, self.ellipse_height)
-        # painter.setPen(Qt.SolidLine)
-        # painter.setBrush(Qt.black)
-        # painter.drawText(self.ellipse_x, self.ellipse_height, self.text)
-        # painter.setPen(Qt.NoPen)
 
-
-# class MaskEdge(QGraphicsItem):
-#     def __init__(self, p1, p2, parent=None):
-#         super(MaskEdge, self).__init__(parent)
-#         self.p1 = p1
-#         self.p2 = p2
-#
-#         if self.p1.x() <= self.p2.x():
-#             self.bounding_rect_x = self.p1.x()
-#         else:
-#             self.bounding_rect_x = self.p2.x()
-#
-#         if self.p1.y() <= self.p2.y():
-#             self.bounding_rect_y = self.p1.y()
-#         else:
-#             self.bounding_rect_y = self.p2.y()
-#
-#         self.bounding_rect_width = np.abs(self.p1.x() - self.p2.x())
-#         self.bounding_rect_height = np.abs(self.p1.y() - self.p2.y())
-#
-#         self.setAcceptedMouseButtons(Qt.LeftButton)
-#         self.setFlag(QGraphicsItem.ItemIsMovable)
-#
-#     def boundingRect(self):
-#         return QRectF(self.bounding_rect_x, self.bounding_rect_y,
-#             self.bounding_rect_width, self.bounding_rect_height)
-#
-#     def paint(self, painter, option, widget):
-#         painter.setPen(Qt.SolidLine)
-#         painter.setBrush(Qt.yellow)
-#         painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
 
 class MaskWidget(QWidget):
     """Widget to manage setting of mask for EPM."""
