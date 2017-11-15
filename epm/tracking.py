@@ -92,7 +92,7 @@ class MaskPoint(QGraphicsItem):
         self.bounding_rect_width = self.ellipse_width
         self.bounding_rect_height = self.ellipse_height
 
-        self.setCursor(Qt.OpenHandCursor)
+        self.setCursor(Qt.PointingHandCursor)
         self.setAcceptedMouseButtons(Qt.LeftButton)
         self.setFlag(QGraphicsItem.ItemIsMovable)
 
