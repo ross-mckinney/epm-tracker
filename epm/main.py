@@ -3,6 +3,7 @@ import os, sys
 
 import motmot.FlyMovieFormat.FlyMovieFormat as FMF
 import numpy as np
+import pandas as pd
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import qdarkstyle
@@ -239,7 +240,21 @@ class MainWindow(QMainWindow):
 
     def track_video(self):
         dialog = TrackingDialog(self.video_widget.video)
+        dialog.tracking_complete.connect(self.load_tracking_data)
         dialog.exec_()
+
+    @pyqtSlot(bool, str)
+    def load_tracking_data(self, is_complete, tracking_data_filename):
+        if not is_complete:
+            return
+
+        tracking_data_filename = str(tracking_data_filename)
+        try:
+            tracking_data = pd.read_excel(tracking_data_filename, index='frame')
+            self.video_widget.tracking_data = tracking_data
+            self.video_widget.update_frame_label()
+        except:
+            print 'Could not load trackind_data_filename: {}'.format(tracking_data_filename)
 
     @pyqtSlot(int, str, int)
     def update_status(self, ix, hmms, frame_rate):
