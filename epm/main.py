@@ -10,6 +10,7 @@ import qdarkstyle
 
 from video import VideoWidget
 from tracking import TrackingDialog
+from fmfconv import fmf_ucmp
 
 DIR = os.path.dirname(__file__)
 DEBUG = False
@@ -190,12 +191,19 @@ class MainWindow(QMainWindow):
             file_dialog = QFileDialog(self)
             video_filename = str(file_dialog.getOpenFileName(
                 caption='Open Video File',
-                filter='Video Files (*.fmf)',
+                filter='Video Files (*.fmf *.wmv *.avi *.mp4 *.mov)',
                 directory=self.root_folder
                 ))
 
         if not os.path.isfile(video_filename):
             return
+
+        if video_filename.split('.')[-1] != 'fmf':
+            savefile = video_filename.split('.')[0] + '.fmf'
+            fmf_ucmp(
+                str(video_filename), str(savefile),
+                width=320, height=240)
+            video_filename = str(savefile)
 
         self.video_widget.set_video(video_filename)
         self.video_info_label.setText(
