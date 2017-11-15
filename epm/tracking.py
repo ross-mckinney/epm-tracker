@@ -134,31 +134,31 @@ class MaskWidget(QWidget):
         )
         self.graphics_scene_view = QGraphicsView(self.graphics_scene)
 
-        # mask points
+        self.initial_mask_point_locations = np.array([
+            [self.video.get_width()/4, 0],
+            [self.video.get_width()/2, self.video.get_height()/3],
+            [self.video.get_width()/4*3, 0],
+
+            [self.video.get_width(), self.video.get_height()/4],
+            [self.video.get_width()/3*2, self.video.get_height()/2],
+            [self.video.get_width(), self.video.get_height()/4*3],
+
+            [self.video.get_width()/4, self.video.get_height()],
+            [self.video.get_width()/2, self.video.get_height()/3*2],
+            [self.video.get_width()/4*3, self.video.get_height()],
+
+            [0, self.video.get_height()/4],
+            [self.video.get_width()/3, self.video.get_height()/2],
+            [0, self.video.get_height()/4*3]
+        ])
+        point_colors = [Qt.blue, Qt.darkBlue, Qt.blue, Qt.green, Qt.darkGreen,
+            Qt.green, Qt.cyan, Qt.darkCyan, Qt.cyan, Qt.magenta, Qt.darkMagenta,
+            Qt.magenta]
+
         self.mask_points = [
-            MaskPoint(self.video.get_width()/4, 0, 10, Qt.blue, '1'),
-            MaskPoint(self.video.get_width()/2,
-                self.video.get_height()/3, 10, Qt.darkBlue, '2'),
-            MaskPoint(self.video.get_width()/4*3, 0, 10, Qt.blue, '3'),
-
-            MaskPoint(self.video.get_width(), self.video.get_height()/4,
-                10, Qt.green, '4'),
-            MaskPoint(self.video.get_width()/3*2, self.video.get_height()/2,
-                10, Qt.darkGreen, '5'),
-            MaskPoint(self.video.get_width(), self.video.get_height()/4*3,
-                10, Qt.green, '6'),
-
-            MaskPoint(self.video.get_width()/4, self.video.get_height(),
-                10, Qt.cyan, '7'),
-            MaskPoint(self.video.get_width()/2,
-                self.video.get_height()/3*2, 10, Qt.darkCyan, '8'),
-            MaskPoint(self.video.get_width()/4*3, self.video.get_height(),
-                10, Qt.cyan, '9'),
-
-            MaskPoint(0, self.video.get_height()/4, 10, Qt.magenta, '10'),
-            MaskPoint(self.video.get_width()/3, self.video.get_height()/2,
-                10, Qt.darkMagenta, '11'),
-            MaskPoint(0, self.video.get_height()/4*3, 10, Qt.magenta, '12')
+            MaskPoint(self.initial_mask_point_locations[i, 0],
+                self.initial_mask_point_locations[i, 1],
+                10, point_colors[i], '') for i in xrange(len(point_colors))
         ]
         for mask_point in self.mask_points:
             self.graphics_scene.addItem(mask_point)
