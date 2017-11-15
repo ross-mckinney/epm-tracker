@@ -40,7 +40,9 @@ class Tracker(QObject):
         for ix in xrange(self.video.get_n_frames()):
             img, _ = self.video.get_frame(ix)
             props.append(
-                find_mouse(img, b_img, threshold=self.tracking_settings.threshold)
+                find_mouse(img, b_img,
+                    threshold=self.tracking_settings.threshold,
+                    inclusion_mask=self.tracking_settings.inclusion_mask)
                 )
             self.progress.emit(ix)
 
