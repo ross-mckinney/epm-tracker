@@ -168,7 +168,9 @@ class MaskWidget(QWidget):
         self.generate_mask_button = QPushButton('Update Mask')
         self.generate_mask_button.clicked.connect(self.generate_mask)
         self.load_mask_button = QPushButton('Load Mask')
+        self.load_mask_button.clicked.connect(self.load_mask)
         self.save_mask_button = QPushButton('Save Mask')
+        self.save_mask_button.clicked.connect(self.save_mask)
 
         layout.addWidget(self.graphics_scene_view, 0, 0, 5, 5)
         layout.addWidget(self.generate_mask_button, 5, 4, 1, 1)
@@ -199,9 +201,9 @@ class MaskWidget(QWidget):
         layout.addWidget(self.arena_with_mask_image_label)
         self.mask_image_groupbox.setLayout(layout)
 
-    @pyqtSlot()
-    def generate_mask(self):
-
+    def _get_global_point_locations(self):
+        """Returns global central point and mask point locations in image
+        (pixel) coordinates."""
         central_rs, central_cs = 0, 0
         global_point_pos = np.zeros(shape=(len(self.mask_points), 2))
         # collect all of the mask points, generate global coords,
@@ -219,6 +221,51 @@ class MaskWidget(QWidget):
         central_point = np.array([
             central_rs / global_point_pos.shape[0],
             central_cs / global_point_pos.shape[0]])
+
+        return central_point, global_point_pos
+
+    @pyqtSlot()
+    def load_mask(self):
+        file_dialog = QFileDialog(self)
+        mask_filename = str(file_dialog.getOpenFileName(
+            caption='Open Mask File',
+            filter='Spreadsheet (*.xlsx)'
+            ))
+        if mask_filename != '':
+            self.tracking_settings.inclusion_mask_filename = mask_filename
+
+        mask_df = pd.read_excel(mask_filename)
+        for i, mask_point in enumerate(self.mask_points):
+            mask_point.setPos(
+                mask_df['cc'][i], mask_df['rr'][i])
+
+    @pyqtSlot()
+    def save_mask(self):
+        file_dialog = QFileDialog(self)
+        mask_savefile = str(file_dialog.getSaveFileName(
+            caption='Save Mask File',
+            filter='Spreadsheet (*.xlsx)'
+            ))
+        if mask_savefile != '':
+            self.tracking_settings.inclusion_mask_filename = mask_savefile
+        else:
+            return
+
+        df = pd.DataFrame()
+        rr, cc = [], []
+        for mask_point in self.mask_points:
+            rr.append(mask_point.y())
+            cc.append(mask_point.x())
+
+        df['rr'] = rr
+        df['cc'] = cc
+        df.to_excel(mask_savefile, index_label='node')
+
+    @pyqtSlot()
+    def generate_mask(self):
+        # get the center of mass of all mask points, and all of the individual
+        # mask point locations in pixel coordinates.
+        central_point, global_point_pos = self._get_global_point_locations()
 
         # get coordinates such that they are all relative to the central point
         relative_point_pos = global_point_pos - central_point
@@ -240,7 +287,7 @@ class MaskWidget(QWidget):
 
         self.mask_image = convert_img_to_uint8(mask)
 
-        self.arena_with_mask_image = self.arena_image
+        self.arena_with_mask_image = self.arena_image.copy()
         self.arena_with_mask_image[~mask.astype(np.bool)] = 0
 
         self.update_mask_image_label()
@@ -499,7 +546,8 @@ class TrackingDialog(QDialog):
         self.progress_bar.setMaximum(self.video.get_n_frames() - 1)
 
         self.stacked_widget_page = 1
-        self.stacked_widget_page_label = QLabel('Page: 1/3')
+        self.stacked_widget_page_label = QLabel(
+            'Page: 1/2')
 
         self.status_bar.addPermanentWidget(self.progress_bar)
         self.status_bar.addWidget(self.stacked_widget_page_label)
@@ -511,6 +559,9 @@ class TrackingDialog(QDialog):
         if self.stacked_widget_page + 1 < n_widgets_in_stack:
             self.stacked_widget_page += 1
         self.stacked_widget.setCurrentIndex(self.stacked_widget_page)
+        self.stacked_widget_page_label.setText(
+            'Page: {}/{}'.format(self.stacked_widget_page + 1,
+            n_widgets_in_stack))
 
     @pyqtSlot()
     def previous_stacked_widget(self):
@@ -518,6 +569,9 @@ class TrackingDialog(QDialog):
         if self.stacked_widget_page > 0:
             self.stacked_widget_page -= 1
         self.stacked_widget.setCurrentIndex(self.stacked_widget_page)
+        self.stacked_widget_page_label.setText(
+            'Page: {}/{}'.format(self.stacked_widget_page + 1,
+            self.stacked_widget.count()))
 
     @pyqtSlot(int)
     def update_progress_bar(self, progress):
