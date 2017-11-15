@@ -125,7 +125,7 @@ def threshold_image(img, b_img, threshold=None):
 
     return binary_image
 
-def find_mouse(img, b_img, threshold=None):
+def find_mouse(img, b_img, threshold=None, inclusion_mask=None):
     """Finds a blob (a mouse) in the given image.
 
     Parameters
@@ -145,6 +145,8 @@ def find_mouse(img, b_img, threshold=None):
         find a mouse.
     """
     mask = threshold_image(img, b_img, threshold)
+    if inclusion_mask is not None:
+        mask[~inclusion_mask.astype(np.bool)] = 0
 
     # Erode image to try and split up unrelated - possibly disconnected areas.
     eroded_img = binary_erosion(mask)
