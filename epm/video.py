@@ -3,11 +3,20 @@ import time
 
 import motmot.FlyMovieFormat.FlyMovieFormat as FMF
 import numpy as np
-from skimage.draw import line_aa, polygon_perimeter
+from skimage.draw import line_aa, polygon_perimeter, circle
+from skimage.color import gray2rgb
+from skimage.util import (
+    img_as_ubyte, # np.uint8
+    img_as_float  # np.float
+)
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from _tracking import (
+    convert_img_to_float,
+    convert_img_to_uint8
+)
 from utils import get_q_image, get_mouse_coords
 
 class VideoWidget(QWidget):
@@ -36,6 +45,9 @@ class VideoWidget(QWidget):
     video_filename : string
         Path to video file currently being displayed.
 
+    tracking_data : pd.DataFrame
+        DataFrame containing tracking data associated with the current video.
+
     Signals
     -------
     frame_changed : int, str, int
@@ -59,7 +71,7 @@ class VideoWidget(QWidget):
 
         self.video = None
         self.video_filename = None
-
+        self.tracking_data = None
         self.is_playing = False
         self.current_frame_ix = 0
         self.frame_rate = 30
@@ -129,6 +141,17 @@ class VideoWidget(QWidget):
             self.current_frame_ix = frame_number
 
         img, _ = self.video.get_frame(self.current_frame_ix)
+
+        # annotate the image if we have tracking_data available.
+        if self.tracking_data is not None:
+            img = img_as_float(img)
+            img = gray2rgb(img)
+            centroid_rr = self.tracking_data['rr'][self.current_frame_ix]
+            centroid_cc = self.tracking_data['cc'][self.current_frame_ix]
+            rr, cc = circle(centroid_rr, centroid_cc, 3)
+            img[rr, cc, :] = [1., 0, 0]
+            img = img_as_ubyte(img)
+
         pixmap = QPixmap.fromImage(get_q_image(img))
         self.frame_label.setPixmap(pixmap)
         self.frame_changed.emit(
