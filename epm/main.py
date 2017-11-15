@@ -11,6 +11,7 @@ from video import VideoWidget
 from tracking import TrackingDialog
 
 DIR = os.path.dirname(__file__)
+DEBUG = False
 
 class MainWindow(QMainWindow):
     def __init__(self, parent = None):
@@ -36,6 +37,19 @@ class MainWindow(QMainWindow):
         self.set_slider()
         self.set_status()
         self.update_status(0, 'NA:NA:NA', -1)
+
+        if DEBUG:
+            base_dir = '/home/ben-shahar/Dropbox/ben-shahar_lab/collaborations/anna'
+            video_filename = os.path.join(base_dir, 'test2.fmf')
+            tracking_data_filename = os.path.join('/home/ben-shahar/',
+                'Wed, 15 Nov 2017 18:34:22 +0000.xlsx')
+            assert os.path.isfile(video_filename), 'video not found'
+            assert os.path.isfile(tracking_data_filename), 'tracking data not found'
+
+            self.open_video(video_filename)
+            tracking_data = pd.read_excel(tracking_data_filename, index='frame')
+            self.video_widget.tracking_data = tracking_data
+            self.video_widget.update_frame_label()
 
     def add_menu_action(self, menu, name, connection, status_tip,
         shortcut=None, icon=None, tool_bar=None, return_action=False):
