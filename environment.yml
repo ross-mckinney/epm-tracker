@@ -2,6 +2,7 @@ name: epm
 dependencies:
   - python=2.7
   - numpy
+  - matplotlib
   - scipy
   - pandas
   - scikit-image
