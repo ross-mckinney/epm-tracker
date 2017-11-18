@@ -121,8 +121,8 @@ class MaskWidget(QWidget):
         self.set_mask_image_ui()
 
         layout=QGridLayout()
-        layout.addWidget(self.mask_image_groupbox, 0, 0, 4, 1)
-        layout.addWidget(self.graphics_scene_groupbox, 0, 1, 2, 1)
+        layout.addWidget(self.mask_image_groupbox, 0, 0, 1, 4)
+        layout.addWidget(self.graphics_scene_groupbox, 1, 0, 1, 2)
         self.setLayout(layout)
 
     def set_graphics_scene_ui(self):
@@ -181,7 +181,7 @@ class MaskWidget(QWidget):
 
     def set_mask_image_ui(self):
         self.mask_image_groupbox = QGroupBox('EPM Arena Mask')
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
 
         self.arena_image, _ = self.video.get_frame(0)
         self.mask_image = np.zeros_like(self.arena_image).astype(np.uint8)
@@ -325,8 +325,8 @@ class ThresholdWidget(QWidget):
 
         layout = QGridLayout()
 
-        layout.addWidget(self.image_groupbox, 0, 0, 3, 1)
-        layout.addWidget(self.input_groupbox, 0, 1, 1, 1)
+        layout.addWidget(self.image_groupbox, 0, 0, 1, 3)
+        layout.addWidget(self.input_groupbox, 1, 0, 1, 1)
         layout.addWidget(self.frame_number_groupbox, 1, 1, 1, 1)
         # layout.addWidget(self.track_button_groupbox, 2, 1, 1, 1)
         self.setLayout(layout)
@@ -341,7 +341,7 @@ class ThresholdWidget(QWidget):
         background image, and the thresholded image."""
         self.image_groupbox = QGroupBox('Images')
 
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
 
         self.raw_image, _ = self.video.get_frame(0)
         self.background_image = calc_background_image(
