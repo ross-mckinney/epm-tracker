@@ -1,4 +1,6 @@
-# Tracking Dialog/widgets go here.
+# Dialogs, Widgets, and QObjects associated with
+# tracking a video.
+
 import os
 from time import gmtime, strftime
 
@@ -25,7 +27,25 @@ from utils import (
 
 
 class Tracker(QObject):
+    """Class used to track mouse in EPM.
+
+    Parameters
+    ----------
+    video : motmot.FlyMovieFormat.FlyMovieFormat
+        Video to track.
+
+    tracking_settings : TrackingSettings
+        Tracking settings used to track video.
+
+    Signals
+    -------
+    progress : pyqtSignal
+        Frame number currently being tracked. Emitted in call to
+        track_video().
+    """
+
     progress = pyqtSignal(int)
+
     def __init__(self, video, tracking_settings, parent=None):
         super(Tracker, self).__init__(parent)
         self.video = video
@@ -50,34 +70,63 @@ class Tracker(QObject):
 
 
 class TrackingSettings:
-    """
+    """Class used to keep track of user-defined tracking settings.
+
     Parameters
     ----------
-    threshold : int, optional
+    threshold : int, optional (default=None)
         Threshold for detecting mouse after background subtraction.
 
     background_n_frames : int, optional (default=200)
         How many frames to use to calculate background image.
 
-    inclusion_mask : np.array, optional
+    inclusion_mask : np.array, optional (default=None)
         Which region of the image should be included in tracking.
 
-    inclusion_mask_filename : string, optional
+    inclusion_mask_filename : string, optional (default=None)
         File that contains information about inclusion_mask.
 
-    save_filename : string, optional
-        Where to save
+    save_filename : string, optional (default=None)
+        Where to save tracked video file.
     """
-    def __init__(self, threshold=None, background_n_frames=200, exclusion_mask=None,
-        exculsion_mask_filename=None, save_filename=None):
+
+    def __init__(self, threshold=None, background_n_frames=200,
+        inclusion_mask=None, inclusion_mask_filename=None, save_filename=None):
         self.threshold = threshold
         self.background_n_frames = background_n_frames
-        self.inclusion_mask = exclusion_mask
-        self.inclusion_mask_filename = exculsion_mask_filename
+        self.inclusion_mask = inclusion_mask
+        self.inclusion_mask_filename = inclusion_mask_filename
         self.save_filename = save_filename
 
 
 class MaskPoint(QGraphicsItem):
+    """This class represents a movable point that can be placed within
+    a QGraphicsScene.
+
+    Together with other MaskPoints, these objects are utilized to help
+    the user define the corner points of the EPM.
+
+    Parameters
+    ----------
+    color : QColor
+        The color of the point.
+
+    text : string, optional (default='')
+        Any text associated with this point.
+
+    ellipse_width : int
+        The width of the displayed point.
+
+    ellipse_height : int
+        The height of the displayed point.
+
+    ellipse_x : int
+        The x-coordinate of this point (in pixel units).
+
+    ellipse_y : int
+        The y-coordinate of this point (in pixel units).
+    """
+
     def __init__(self, ellipse_x, ellipse_y, ellipse_width, color,
         text='', parent=None):
         super(MaskPoint, self).__init__(parent)
