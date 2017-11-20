@@ -20,23 +20,23 @@ This software also uses [conda][3] for package and environment management. Thoug
 
 First, download the epm-tracker .zip file and extract its contents to a memorable location. Then, open an Anaconda Prompt (on Windows, search for Anaconda Prompt from the Start Menu), and navigate into the epm-tracker folder. Then, use conda to setup an environment that will contain all of the necessary python packages needed to use this software. To do this, type the following into the Anaconda Prompt:
 
-'''
+~~~bash
 conda env create -f environment.yml
-'''
+~~~
 
 This will use the environment.yml file (located in the epm-tracker folder) to setup and environment called "epm". Once all of the required packages have finished downloading/installing, type the following into the Anaconda Prompt to activate the environment:
 
 On Windows:
 
-'''
+~~~bash
 activate epm
-'''
+~~~
 
 On MacOS/Linux:
 
-'''
+~~~bash
 source activate epm
-'''
+~~~
 
 In parentheses, and to the left of the current directory within the Anaconda Prompt, you should see something like "(epm)", this means that you have successfully activated the epm environment.
 
@@ -44,9 +44,9 @@ In parentheses, and to the left of the current directory within the Anaconda Pro
 
 With the epm environment activated, you should be able to launch the GUI by typing the following into the Anaconda Prompt (this assumes that you are still in the epm-tracker folder):
 
-'''
+~~~bash
 python epm/main.py
-'''
+~~~
 
 # using the gui
 
