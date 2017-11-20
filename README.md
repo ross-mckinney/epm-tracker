@@ -1,5 +1,5 @@
 ---
-title: "epm-tracker Documentation"
+title: "epm-tracker documentation"
 author: Ross McKinney
 date: 2017-11-20
 ---
@@ -18,13 +18,13 @@ This software also uses [conda][3] for package and environment management. Thoug
 
 - Note: I will describe how to install this software using the Anaconda Prompt, though any terminal should do.
 
-First, download the epm-tracker .zip file and extract its contents to a memorable location. Then, open an Anaconda Prompt (on Windows, search for Anaconda Prompt from the Start Menu), and navigate into the epm-tracker folder. Then, use conda to setup an environment that will contain all of the necessary python packages needed to use this software. To do this, type the following into the Anaconda Prompt:
+First, download the epm-tracker .zip file and extract its contents to a memorable location. Then, open an Anaconda Prompt (on Windows, search for Anaconda Prompt from the Start Menu), and navigate into the epm-tracker folder. Finally, use conda to setup an environment that will contain all of the necessary python packages needed to use this software. To do this, type the following into the Anaconda Prompt:
 
 ~~~bash
 conda env create -f environment.yml
 ~~~
 
-This will use the environment.yml file (located in the epm-tracker folder) to setup and environment called "epm". Once all of the required packages have finished downloading/installing, type the following into the Anaconda Prompt to activate the environment:
+This will use the environment.yml file (located in the epm-tracker folder) to setup an environment called "epm". Once all of the required packages have finished downloading/installing, type the following into the Anaconda Prompt to activate the environment:
 
 On Windows:
 
@@ -50,9 +50,11 @@ python epm/main.py
 
 # using the gui
 
+![Main page of GUI. The main page consists of the media viewer, containing controls for navigating through the video and some simple video statistics. \label{fig01} ](docs/img/media-viewer-annotations.png)
+
 ## opening a video file
 
-The main window is used as a media viewer. To open a video, go to File -> Open, then select the video file you want to view/track. Currently, you are allowed to select a video file with any of the following formats: **.fmf**, **.avi**, **.mp4**, **.mov**, and **.wmv**. If you select any file type other than a .fmf file, ffmpeg will launch within the Anaconda Prompt and convert the selected video to a .fmf video. You can monitor the progress of this conversion by looking at the output within the Anaconda Prompt. Following successful conversion, the video will open in the media viewer. If you select a .fmf file, no video conversion will occur, and the video will automatically open in the media viewer.
+The main window is used as a media viewer (See Figure \ref{fig01}). To open a video, go to File -> Open, then select the video file you want to view/track. Currently, you are allowed to select a video file with any of the following formats: **.fmf**, **.avi**, **.mp4**, **.mov**, and **.wmv**. If you select any file type other than a .fmf file, ffmpeg will launch within the Anaconda Prompt and convert the selected video to a .fmf video. You can monitor the progress of this conversion by looking at the output within the Anaconda Prompt. Following successful conversion, the video will open in the media viewer. If you select a .fmf file, no video conversion will occur, and the video will automatically open in the media viewer.
 
 ## navigating through a video file
 
@@ -70,7 +72,7 @@ To track a video file, ensure that a video is currently open and visible in the 
 
 ### setting an arena mask
 
-Within the first page of the Tracking Dialog window, you are asked to set an arena mask, which will be used to keep only those pixels (within each of the video frames) that fall within the EPM arena.
+Within the first page of the Tracking Dialog window, you are asked to set an arena mask, which will be used to keep only those pixels (within each of the video frames) that fall within the EPM arena (See Figure \ref{fig02}).
 
 The top three images in the "EPM Arena Mask" group box are as follows: (1) a raw image of the first frame of the selected video, (2) a binary image of the currently selected arena mask, and (3) an image of the arena mask placed on top of the raw image of the first frame of the selected video. Note that the white area in image (2) is retained, whereas the black area is discarded. Images (2) and (3) are initially black, and only show the specified arena when the user clicks the "Update Mask" button, described below.
 
@@ -80,13 +82,17 @@ If you do not set a mask, all image pixels will be used to find the mouse in the
 
 Use the ">>" button to proceed to the next page in the Tracking Dialog window.
 
+![The first page of the Tracking Dialog window. This page allows the user to set a mask for the EPM arena by positioning small circles ("Movable EPM Mask Circles") on the corners of the EPM. These circles do not have to be in any particular order. The "Binary Mask" and "Masked Frame #1" images are initially blank, and only display the binary mask and masked frame once the user hits the "Update Mask" button. \label{fig02}](docs/img/tracking-dialog-pg01-no-mask-set-annotations.png)
+
 ### setting the pixel threshold
 
-On the second page of the Tracking Dialog window, you will be asked to specify a threshold used to exclude pixels. Any pixels below the currently set threshold will be discarded during tracking.
+On the second page of the Tracking Dialog window, you will be asked to specify a threshold used to exclude pixels (See Figure \ref{fig03}). Any pixels below the currently set threshold will be discarded during tracking.
 
 Similar to the first page of the Tracking Dialog window, there are three images at the top of the page, in a group box labeled "Images". (1) The first image is the calculated background image, (2) the second image is a raw image of the currently selected video frame, and (3) the third image is a background-subtracted and thresholded image of the currently selected video frame.
 
 Using the "Tracking Settings" group box, the user can specify the tracking settings. Specifically, the spin box to the right of "Set threshold" can be changed, which will update the threshold to use for tracking. Following updating of the threshold, images (2) and (3) will also be updated to show you which pixels will be retained. The goal is to make the pixels representing the mouse as large as possible, while minimizing non-mouse pixels.
+
+![The second page of the Tracking Dialog window. This page allows the user to set a threshold to exclude pixels beneath a specified value. It also allows the user to set the number of frames used in calculating the background image. Finally, the user can set a save file name for the tracked mouse, and use the "Jump to Frame" group box to validate their settings.\label{fig03}](docs/img/tracking-dialog-pg02-tracking-settings-annotated.png)
 
 ### setting the background image frame count
 
