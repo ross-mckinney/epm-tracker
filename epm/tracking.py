@@ -290,6 +290,15 @@ class MaskWidget(QWidget):
 
     @pyqtSlot()
     def save_mask(self):
+        """Save the position of each of the mask points into an .xlsx file.
+
+        This will save two files: (1) the first contains the relative
+        positions of the mask points, and is for use when loading a mask
+        through the GUI. (2) The second file (named the same as the first
+        with the addition of '-pixel-coords'), contains the 'true' positions
+        of the mask points in pixel coordinates. This is for use in analyzing
+        the positions of the tracking data (in analysis.py).
+        """
         file_dialog = QFileDialog(self)
         mask_savefile = str(file_dialog.getSaveFileName(
             caption='Save Mask File',
@@ -309,6 +318,15 @@ class MaskWidget(QWidget):
         df['rr'] = rr
         df['cc'] = cc
         df.to_excel(mask_savefile, index_label='node')
+
+        # also save a file containing the global positions of the
+        # arena mask coordinates -- for analysis of tracking data.
+        central_point, global_point_pos = self._get_global_point_locations()
+        df = pd.DataFrame()
+        df['rr'] = global_point_pos[:, 0]
+        df['cc'] = global_point_pos[:, 1]
+        global_mask_savefile = mask_savefile[:-5] + '-pixel-coords.xlsx'
+        df.to_excel(global_mask_savefile, index_label='node')
 
     @pyqtSlot()
     def generate_mask(self):
