@@ -4,13 +4,14 @@ import os, sys
 import motmot.FlyMovieFormat.FlyMovieFormat as FMF
 import numpy as np
 import pandas as pd
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import qdarkstyle
 
-from video import VideoWidget
-from tracking import TrackingDialog
-from fmfconv import fmf_ucmp
+from widgets import VideoWidget
+from dialogs import TrackingDialog
+from _video_conversion import fmf_ucmp
 
 DIR = os.path.dirname(__file__)
 DEBUG = False

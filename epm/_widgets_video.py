@@ -1,9 +1,13 @@
 
+import os
+import sys
+
 import time
 
 import motmot.FlyMovieFormat.FlyMovieFormat as FMF
 import numpy as np
-from skimage.draw import line_aa, polygon_perimeter, circle
+
+from skimage.draw import circle
 from skimage.color import gray2rgb
 from skimage.util import (
     img_as_ubyte, # np.uint8
@@ -13,11 +17,7 @@ from skimage.util import (
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from _tracking import (
-    convert_img_to_float,
-    convert_img_to_uint8
-)
-from utils import get_q_image, get_mouse_coords
+from _utils import get_q_image
 
 class VideoWidget(QWidget):
     """Simple widget to display video data.

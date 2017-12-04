@@ -1,6 +1,5 @@
 # Tracking functions, independent of GUI go here
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import motmot.FlyMovieFormat.FlyMovieFormat as FMF

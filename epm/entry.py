@@ -1,5 +1,4 @@
-# entry.py
-# entry points from command line calls.
+# entry points for command line calls via click.
 
 import os
 import click
