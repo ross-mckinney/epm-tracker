@@ -1,7 +1,7 @@
 ---
 title: "epm-tracker documentation"
 author: Ross McKinney
-date: 2017-11-20
+date: 2017-12-04
 ---
 
 # intro
@@ -40,13 +40,36 @@ source activate epm
 
 In parentheses, and to the left of the current directory within the Anaconda Prompt, you should see something like "(epm)", this means that you have successfully activated the epm environment.
 
-# launching the gui
-
-With the epm environment activated, you should be able to launch the GUI by typing the following into the Anaconda Prompt (this assumes that you are still in the epm-tracker folder):
+The, install the epm-tracker package by typing the following into the Anaconda Prompt:
 
 ~~~bash
-python epm/main.py
+python setup.py install
 ~~~
+
+This will run the installation script for the epm-tracker; you should now be able to import "epm" into any python program from within the current environment. To check that this is the case, run the following from the Prompt:
+
+~~~bash
+ipython
+~~~
+
+This will launch the Python [REPL][4], from which you can type:
+
+~~~python
+>>> import epm
+>>> epm.__version__   # 0.1.1 should print to the prompt.
+~~~
+
+If everything proceeds without error, congratulations, you have successfully installed all of the necessary packages to start tracking your mice!
+
+# launching the gui
+
+With the epm environment activated, you should be able to launch the GUI by typing the following into the Anaconda Prompt (note that you can be in any directory, it doesn't matter if you are in the epm-tracker folder anymore):
+
+~~~bash
+epm-tracker
+~~~
+
+The GUI should launch without any issues.
 
 # using the gui
 
@@ -134,3 +157,4 @@ jupyter notebook
 [1]: https://www.ffmpeg.org/
 [2]: http://code.astraw.com/projects/motmot/fly-movie-format.html
 [3]: https://www.anaconda.com/download
+[4]: https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop
