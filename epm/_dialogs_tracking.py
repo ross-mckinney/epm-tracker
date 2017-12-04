@@ -15,6 +15,9 @@ from widgets import (
     MaskWidget,
     ThresholdWidget,
 )
+from _tracking_settings import TrackingSettings
+from _tracking_qobjects import Tracker
+
 
 class TrackingDialog(QDialog):
 

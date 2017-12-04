@@ -12,6 +12,9 @@ from skimage.draw import polygon
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from _tracking_algorithms import (
+    convert_img_to_uint8
+)
 from _utils import get_q_image
 
 

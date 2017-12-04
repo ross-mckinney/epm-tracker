@@ -13,7 +13,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from _tracking_algorithms import (
-    get_otsu_threshold
+    get_otsu_threshold,
+    calc_background_image,
+    convert_img_to_uint8,
+    threshold_image
 )
 from _utils import get_q_image
 
