@@ -8,5 +8,6 @@ dependencies:
   - scikit-image
   - pyqt=4.*
   - pip:
+    - click
     - qdarkstyle
     - motmot.FlyMovieFormat

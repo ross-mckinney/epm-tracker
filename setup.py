@@ -10,6 +10,7 @@ AUTHOR_EMAIL = 'ross.m.mckinney@gmail.com'
 LICENSE = 'MIT'
 
 REQUIRED_PACKAGES = {
+    'click': 'click',
     'pandas': 'pandas',
     'scipy': 'scipy',
     'skimage': 'skimage',
