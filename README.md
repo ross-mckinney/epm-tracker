@@ -76,7 +76,9 @@ Within the first page of the Tracking Dialog window, you are asked to set an are
 
 The top three images in the "EPM Arena Mask" group box are as follows: (1) a raw image of the first frame of the selected video, (2) a binary image of the currently selected arena mask, and (3) an image of the arena mask placed on top of the raw image of the first frame of the selected video. Note that the white area in image (2) is retained, whereas the black area is discarded. Images (2) and (3) are initially black, and only show the specified arena when the user clicks the "Update Mask" button, described below.
 
-The image just below the "EPM Arena Mask" group box is where the user specifies the arena. Use your mouse cursor to move each of the colored circles to one of the corners on the EPM. It shouldn't matter which dot is placed at which corner, though I haven't fully tested this yet. **Be careful to place the center of each dot within the image, placing them outside of the image will likely result in a bug that I haven't dealt with yet.** Once you are satisfied with the position of each of the colored circles, hit the "Update Mask" button. You should see that images (2) and (3) in the "EPM Arena Mask" group box are updated. If you like the generated mask, you can proceed to the next page, or save the mask for later use, by hitting the "Save Mask" button. This will save the locations of each colored circle in a .xlsx file. Similarly, you can load a mask by hitting the "Load Mask" button, and selecting the appropriate .xlsx file.
+The image just below the "EPM Arena Mask" group box is where the user specifies the arena. Use your mouse cursor to move each of the colored circles to one of the corners on the EPM. It shouldn't matter which dot is placed at which corner, though I haven't fully tested this yet. **Be careful to place the center of each dot within the image, placing them outside of the image will likely result in a bug that I haven't dealt with yet.** Once you are satisfied with the position of each of the colored circles, hit the "Update Mask" button. You should see that images (2) and (3) in the "EPM Arena Mask" group box are updated.
+
+If you like the generated mask, you can proceed to the next page, or save the mask for later use, by hitting the "Save Mask" button. This will save the locations of each colored circle in two separate .xlsx files. The first file - saved with the name you've specified - contains the relative coordinates of the mask points. The second file - saved with the name you've specifed plus "-pixel-coords" appended - contains the raw pixel coordinates of the mask points. The first file is for use in loading masks onto the video being tracked. The second file is for use in [analyzing your tracking data](\ref{analysis}).
 
 If you do not set a mask, all image pixels will be used to find the mouse in the EPM.
 
@@ -110,13 +112,24 @@ You can use the slider, spinbox, and "Random Frame" button in the "Jump to Frame
 
 Once you have specified all of the tracking settings, hit the "Begin Tracking" button to start tracking. The tracking progress is monitored via the progress bar on the bottom right side of the Tracking Dialog window. Once tracking has completed, the Tracking Dialog window will disappear, and the tracked video will be displayed in the media viewer.
 
-## analyzing your tracking data
+## tracking files
 
 All of the tracking data is saved into a .xlsx that contains the following columns: (1) frame, (2) rr, (3) cc, (4) area, (5) maj, (6) min. Each row represents the data from a single tracked frame, and any missing data is represented as a "NA" value.
 
 During tracking, the mouse is identified as the largest blob of connected pixels. Subsequently, this "blob" is modeled as an ellipse, which can be defined by its centroid (center of mass), and major and minor axis lengths (orientation of the ellipse should also be included in this). The centroid position (x, y) is saved in pixel coordinates as (cc, rr), which are columns (3) and (2) in the .xlsx file. To plot the "true" position of the mouse in the video, you should plot cc versus -rr (this is because pixel coordinates of an image have an inverted y-axis relative to the normal Cartesian system). The major and minor axis lengths of the ellipse fitted to the blob are saved in columns (5) and (6), and the area of the ellipse fitted to the blob is saved in column (4).
 
 Note that all of these values are currently in pixel units. Therefore, to compare between videos, you should ensure that you are not changing the camera's position or any of the camera's settings (such as zoom) between recordings.
+
+# analyzing your data
+ \label{analysis}
+
+See the example Jupyter notebook, located in epm/docs for an exmple of how you could analyze some of your data.
+
+To launch Jupyter notebook, open up a command prompt navigat to the folder containing your data, and type:
+
+~~~bash
+jupyter notebook
+~~~
 
 [1]: https://www.ffmpeg.org/
 [2]: http://code.astraw.com/projects/motmot/fly-movie-format.html
