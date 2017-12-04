@@ -123,9 +123,9 @@ Note that all of these values are currently in pixel units. Therefore, to compar
 # analyzing your data
  \label{analysis}
 
-See the example Jupyter notebook, located in epm/docs for an exmple of how you could analyze some of your data.
+See the example Jupyter notebook, located in epm/docs for an example of how you could analyze some of your data.
 
-To launch Jupyter notebook, open up a command prompt navigat to the folder containing your data, and type:
+To launch Jupyter notebook, open up a command prompt navigate to the folder containing your data, and type:
 
 ~~~bash
 jupyter notebook
