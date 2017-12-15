@@ -48,7 +48,7 @@ def get_total_distance_traveled(tracking_data, conversion_factor=1.):
     -------
     total_distance_traveled : float
     """
-    return np.sum(
+    return np.nansum(
         get_per_frame_distance_traveled(tracking_data, conversion_factor)
         )
 
