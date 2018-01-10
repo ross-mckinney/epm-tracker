@@ -18,7 +18,7 @@ This software also uses [conda][3] for package and environment management. Thoug
 
 - Note: I will describe how to install this software using the Anaconda Prompt, though any terminal should do.
 
-First, download the epm-tracker .zip file and extract its contents to a memorable location. Then, open an Anaconda Prompt (on Windows, search for Anaconda Prompt from the Start Menu), and navigate into the epm-tracker folder. Finally, use conda to setup an environment that will contain all of the necessary python packages needed to use this software. To do this, type the following into the Anaconda Prompt:
+First, download the epm-tracker .zip file and extract its contents to a memorable location (or clone this repository). Then, open an Anaconda Prompt (on Windows, search for Anaconda Prompt from the Start Menu), and navigate into the epm-tracker folder. Finally, use conda to setup an environment that will contain all of the necessary python packages needed to use this software. To do this, type the following into the Anaconda Prompt:
 
 ~~~bash
 conda env create -f environment.yml
