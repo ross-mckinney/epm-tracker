@@ -51,7 +51,8 @@ if __name__ == '__main__':
         version=VERSION,
         install_requires=install_requires,
         packages=[
-                'epm'
+                'epm',
+                'epm.analysis'
             ],
         package_data={'epm': ['icons/*.png']},
         entry_points="""
